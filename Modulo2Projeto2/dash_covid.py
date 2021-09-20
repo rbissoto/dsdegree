@@ -7,7 +7,14 @@ import streamlit as st  # versão 0.87
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
-from dateutil.relativedelta import relativedelta # to add days or years
+from dateutil.relativedelta import relativedelta
+#from traitlets.traitlets import default # to add days or years
+
+st.set_page_config(page_title='Covid Dashboard', page_icon=None, layout='wide', initial_sidebar_state='auto')
+
+col3,col4 = st.columns(2)
+col4.image(image='R.jpg',caption='')
+col3.title('Covid 19 Dashboard')
 
 def choose_dataset():
     list_y = []
@@ -56,7 +63,7 @@ def datetime_slider():
     return pd.to_datetime(slider[0]),pd.to_datetime(slider[1])
     #return slider
 def convert_to_percentage(df_p):
-    df_p['vaccines'] = (df_p['vaccines'] / df_p['population'] / 2)
+    df_p['vaccines'] = (df_p['vaccines'] / df_p['population'])
     df_p['tests'] = (df_p['tests'] / df_p['population'])
     df_p['deaths'] = (df_p['deaths'] / df_p['confirmed'])
     df_p['recovered'] = (df_p['recovered'] / df_p['confirmed'])
@@ -64,31 +71,34 @@ def convert_to_percentage(df_p):
     return df_p
 
 # Inserindo texto
-st.title('Covid 19 Dashboard')
+#st.title('Covid 19 Dashboard')
 
-option = st.selectbox("Which Dashboard?", ('','Single Country', 'Compare Countries', 'Historical Data Animation','World Map'))
+option = st.selectbox("Which Dashboard?", ('','Single Country', 'Compare Countries', 'Bar Chart Animation','World Map'))
 
 df, src = covid19()
 countries_list = df["administrative_area_level_1"].unique()
 col1,col2 = st.columns(2)
-if col1.button('Convert all values to %'):
+if col1.button('Display percentage'):
     df = convert_to_percentage(df)
     percentage = True
 else:  
     percentage = False
-if col2.button('Convert back to absolute values'):
+if col2.button('Display absolute values'):
     df, src = covid19()
 rename_columns(df)
 if option == '':
     st.write('Instructions:')
-    st.write('Single Countr:')
-    st.write('Instructions:')
-    st.write('Instructions:')
-    st.write('Instructions:')
+    st.write('- Choose one dashboard to display between the available options of single country, country compare, bar animation and world map animation')
+    st.write('- Choose one or more data options according to dashboard between # of vaccines, # of cases Confirmed, # of tests performed, # of people recovered and deaths')
+    st.write('- Select one or more countries if applicable and data range if desired, data will display absolute values by default')
+    st.write('- Click the percentage button to see %, vaccines*/tests/confirmed calculated against total population, deaths/recovered calculated against confirmed')
+    st.write('*For vaccines % the number may go above 200% as people receive two or even three doses') 
+
 if option == 'Single Country':
     mask_dt = datetime_slider()
-    country = st.sidebar.selectbox("Select a country", countries_list)
+    country = st.sidebar.selectbox("Select a country", countries_list, index=25)
 #    country2 = st.sidebar.text_input("Or type the country name here in English")
+    st.sidebar.write('Select data options:')
     list_y = choose_dataset()
     if not (country):
         st.warning('Please select a country')
@@ -115,11 +125,13 @@ if option == 'Single Country':
             df,
             x='date',
             y=list_y,
-            title=country))
+            title=country,
+            width=1000))
 
-if option == 'Historical Data Animation':
+if option == 'Bar Chart Animation':
     countries = st.sidebar.multiselect('Select two or more countries to display animation:',countries_list)
     st.write(len(countries))
+    st.sidebar.write('Select data option:')
     list_x = choose_dataset()
     mask_dt = datetime_slider()
     if len(countries) < 2:
@@ -128,7 +140,10 @@ if option == 'Historical Data Animation':
     if len(list_x) > 1:
         st.warning('Choosing more than one data element is not allowed, it will cause visualization problems due to difference in scale!')
         st.stop()
-    df_ani = df[df['Country'].isin(countries)]
+    if len(list_x) == 0:
+        st.warning('Please select at least one data element!')
+        st.stop()
+    df_ani = df[df['Country'].isin(countries)].reset_index()
     handle_nan(df_ani)
     df_ani = df_ani[(df_ani['date'] >= mask_dt[0]) & (df_ani['date'] <= mask_dt[1])]
     df_ani['day'] = df_ani['date'].apply(lambda x: str(x.year)+'-'+str(x.month)+'-'+str(x.day))
@@ -140,12 +155,13 @@ if option == 'Historical Data Animation':
             #hover_name ='country',
             #range_x = [0, np.size(df_ani['id'].unique())],
             range_x = [0, df_ani[list_x[0]].max()])
- #   fig.update_layout(xaxis_range=(0, df_ani['Vaccines'].max())
+    fig.update_layout(autosize=True,width=1000)
     st.write(fig)
 
 if option == 'Compare Countries':
     mask_dt = datetime_slider()
     countries = st.sidebar.multiselect('Select two or more countries to compare:',countries_list)
+    st.sidebar.write('Select data option:')
     list_y = choose_dataset()
     if len(countries) < 2:
         st.warning('Please select at least two country to display on the left side')
@@ -153,36 +169,41 @@ if option == 'Compare Countries':
     if len(list_y) == 0:
         st.warning('Please select at least one set of data to compare')
         st.stop()
-    df_compare = df[df['Country'].isin(countries)]
+    if len(list_y) > 1:
+        st.warning('Selecting more than one data option is allowed but might cause visualization issues due to scale')
+    df_compare = df[df['Country'].isin(countries)].reset_index()
     handle_nan(df_compare)
-    df = df[(df['date'] >= mask_dt[0]) & (df['date'] <= mask_dt[1])]
+    df_compare = df_compare[(df_compare['date'] >= mask_dt[0]) & (df_compare['date'] <= mask_dt[1])]
     fig = go.Figure()
     for i in list_y:
         for j in countries:
-            df_compare = df[df['Country'] == j]
+            df_compare = df_compare[df_compare['Country'] == j]
             fig.add_trace(go.Scatter(
                     x=df_compare.date,
                     y=df_compare[i],
                     mode='lines',
                     name=j+' - '+i
                 ))
+    fig.update_layout(autosize=True,width=1000)
     st.write(fig)
 
 if option == 'World Map':
+    st.sidebar.write('Select data option:')
     d = choose_dataset()
     mask_dt = datetime_slider()
     if len(d) != 1:
-        st.warning('Please select at least one set of data to compare')
+        st.warning('Please select one data option to compare')
         st.stop()
     handle_nan(df)
     df = df[(df['date'] >= mask_dt[0]) & (df['date'] <= mask_dt[1])]
     df['day'] = df['date'].apply(lambda x: str(x.year)+'-'+str(x.month)+'-'+str(x.day))
     fig = px.choropleth(df, locations="id", color=d[0], hover_name="Country", animation_frame="day")#, range_color=[20,80])
+    fig.update_layout(autosize=True,width=1000)
     st.write(fig)
-    df
 
-st.sidebar.write('Developed for Data Science Degree - Module 2')
-st.sidebar.write('by Rafael Bissoto, Felipe Aliprandini, Fabricio Pavanin')
-st.sidebar.write('Dataset from covid19dh by:')
-st.sidebar.write('Guidotti, E., Ardia, D., (2020), "COVID-19 Data Hub", Journal of Open Source Software 5(51):2376, doi: 10.21105/joss.02376.')
+st.sidebar.write('')
+st.sidebar.write('')
+st.sidebar.write('Developed for Data Science Degree - Module 2 by Rafael Bissoto, Felipe Aliprandini and Fabricio Pavanin')
+st.sidebar.write('')
+st.sidebar.write('Dataset from "covid19dh" by: Guidotti, E., Ardia, D., (2020), "COVID-19 Data Hub", Journal of Open Source Software 5(51):2376, doi: 10.21105/joss.02376.')
 st.stop()
