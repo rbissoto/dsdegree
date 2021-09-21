@@ -5,4 +5,3 @@ numpy
 streamlit
 plotly.express
 plotly
-dateutil.relativedelta

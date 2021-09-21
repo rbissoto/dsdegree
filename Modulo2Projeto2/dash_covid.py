@@ -6,7 +6,6 @@ import numpy as np
 import streamlit as st
 import plotly.express as px
 import plotly as pt
-from dateutil.relativedelta import relativedelta
 #from traitlets.traitlets import default # to add days or years
 
 st.set_page_config(page_title='Covid Dashboard', page_icon=None, layout='wide', initial_sidebar_state='auto')
