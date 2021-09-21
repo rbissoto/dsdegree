@@ -1,4 +1,3 @@
-re
 covid19dh
 datetime
 pandas

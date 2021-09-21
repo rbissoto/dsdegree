@@ -1,4 +1,4 @@
-from re import T
+#from re import T
 from covid19dh import covid19
 import datetime as dt
 import pandas as pd
