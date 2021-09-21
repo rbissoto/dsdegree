@@ -3,8 +3,7 @@ from covid19dh import covid19
 import datetime as dt
 import pandas as pd
 import numpy as np
-import streamlit as st  # versão 0.87
-import matplotlib.pyplot as plt
+import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from dateutil.relativedelta import relativedelta
