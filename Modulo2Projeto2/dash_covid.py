@@ -85,6 +85,7 @@ else:
     percentage = False
 if col2.button('Display absolute values'):
     df, src = covid19()
+    
 rename_columns(df)
 if option == '':
     st.write('Instructions:')
