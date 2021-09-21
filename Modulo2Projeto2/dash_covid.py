@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
+import plotly as pt
 from dateutil.relativedelta import relativedelta
 #from traitlets.traitlets import default # to add days or years
 
@@ -174,11 +174,11 @@ if option == 'Compare Countries':
     df_compare = df[df['Country'].isin(countries)].reset_index()
     handle_nan(df_compare)
     df_compare = df_compare[(df_compare['date'] >= mask_dt[0]) & (df_compare['date'] <= mask_dt[1])]
-    fig = go.Figure()
+    fig = pt.graph_objects.Figure()
     for i in list_y:
         for j in countries:
             df_compare = df_compare[df_compare['Country'] == j]
-            fig.add_trace(go.Scatter(
+            fig.add_trace(pt.graph_objects.Scatter(
                     x=df_compare.date,
                     y=df_compare[i],
                     mode='lines',
