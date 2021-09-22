@@ -98,7 +98,7 @@ if option == '':
     st.write('- Choose one or more data options according to dashboard between # of vaccines, # of cases Confirmed, # of tests performed, # of people recovered and deaths')
     st.write('- Select one or more countries if applicable and data range if desired, data will display absolute values by default')
     st.write('- Click the percentage button to see %, vaccines*/tests/confirmed calculated against total population, deaths/recovered calculated against confirmed')
-    st.write('*For vaccines % the number may go above 200% as people receive two or even three doses') 
+    st.write('*For vaccines % the number may go above 200% as each person can receive two or even three doses') 
 
 if option == 'Single Country':
     mask_dt = datetime_slider()
