@@ -94,6 +94,7 @@ if col2.button('Display absolute values'):
 rename_columns(df)
 if option == '':
     st.write('Instructions:')
+    st.write('- You can switch themes between light and dark by going to ☰ -> Settings -> Theme')
     st.write('- Choose one dashboard to display between the available options of single country, country compare, bar animation and world map animation')
     st.write('- Choose one or more data options according to dashboard between # of vaccines, # of cases Confirmed, # of tests performed, # of people recovered and deaths')
     st.write('- Select one or more countries if applicable and data range if desired, data will display absolute values by default')
