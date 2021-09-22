@@ -7,16 +7,17 @@ import numpy as np
 import streamlit as st
 import plotly.express as px
 import plotly as pt
+import requests
+from io import BytesIO
 
 #from traitlets.traitlets import default # to add days or years
 
 st.set_page_config(page_title='Covid Dashboard', page_icon=None, layout='wide', initial_sidebar_state='auto')
 
 col3,col4 = st.columns(2)
-#r = requests.get("https://assets.publishing.service.gov.uk/media/5f3cfe11e90e0732e74425ac/covid19-illustration.jpg")
+r = requests.get("https://github.com/rbissoto/dsdegree/raw/main/Modulo2Projeto2/R.jpg")
 #'https://github.com/rbissoto/dsdegree/blob/main/Modulo2Projeto2/R.jpg')
-img = PIL.Image.open(r'./R.jpg')
-#r.content
+img = PIL.Image.open(BytesIO(r.content))
 col4.image(img, caption='')
 col3.title('Covid 19 Dashboard')
 
