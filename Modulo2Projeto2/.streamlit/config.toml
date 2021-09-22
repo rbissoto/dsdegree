@@ -1,7 +1,7 @@
 [theme]
-base="dark"
+base="red"
 primaryColor="purple"
 backgroundColor="red"
 secondaryBackgroundColor="orange"
 textColor = "blue"
-font = "sans-serif"
+font = "serif"
