@@ -1,4 +1,5 @@
 #from re import T
+import PIL
 from covid19dh import covid19
 import datetime as dt
 import pandas as pd
@@ -6,12 +7,19 @@ import numpy as np
 import streamlit as st
 import plotly.express as px
 import plotly as pt
+from io import StringIO
+import requests
+
 #from traitlets.traitlets import default # to add days or years
 
 st.set_page_config(page_title='Covid Dashboard', page_icon=None, layout='wide', initial_sidebar_state='auto')
 
 col3,col4 = st.columns(2)
-col4.image(image='R.jpg',caption='')
+#r = requests.get("https://assets.publishing.service.gov.uk/media/5f3cfe11e90e0732e74425ac/covid19-illustration.jpg")
+#'https://github.com/rbissoto/dsdegree/blob/main/Modulo2Projeto2/R.jpg')
+img = PIL.Image.open('./R.jpg')
+#r.content
+col4.image(img, caption='')
 col3.title('Covid 19 Dashboard')
 
 def choose_dataset():
